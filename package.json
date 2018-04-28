@@ -1,0 +1,23 @@
+{
+  "name": "priorityeventemmitter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha tests/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xingbofeng/PriorityEventEmmitter.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xingbofeng/PriorityEventEmmitter/issues"
+  },
+  "homepage": "https://github.com/xingbofeng/PriorityEventEmmitter#readme",
+  "devDependencies": {
+    "assert": "^1.4.1",
+    "mocha": "^5.1.1"
+  }
+}
