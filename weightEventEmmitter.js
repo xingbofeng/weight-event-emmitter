@@ -1,9 +1,9 @@
 /**
- * Create by https://github.com/xingbofeng at 2018-04-27
- * 支持自定义事件顺序的eventHub
+ * Create by xingbofeng
+ * 支持自定义事件顺序的事件监听器
  */
 
-class PriorityEventEmmitter {
+class WeightEventEmmitter {
   constructor() {
     this.listeners = {};
   }
@@ -64,12 +64,12 @@ class PriorityEventEmmitter {
 
   /**
    * _findIndexOfListeners：用于$off方法，找到一个权重的事件监听器集合中的指定事件监听器下标
-   * @param  {Array} priorityListeners  指定权重事件监听器集合
+   * @param  {Array} weightListeners  指定权重事件监听器集合
    * @param  {Function} listener        事件监听器
    * @return {Number}                   事件监听器下标，如果没找到则返回-1
    */
-  _findIndexOfListeners(priorityListeners, listener) {
-    return priorityListeners.findIndex((value) => value === listener);
+  _findIndexOfListeners(weightListeners, listener) {
+    return weightListeners.findIndex((value) => value === listener);
   }
 
   /**
@@ -97,15 +97,15 @@ class PriorityEventEmmitter {
     const originEventListeners = this.listeners[eventName];
 
     // 遍历所有该事件名下的所有权重的listeners
-    for (let priority in originEventListeners) {
-      if (originEventListeners.hasOwnProperty(priority)) {
+    for (let weight in originEventListeners) {
+      if (originEventListeners.hasOwnProperty(weight)) {
         // listeners为任意权重的事件监听器集合
-        const priorityListeners = originEventListeners[priority];
-        let index = this._findIndexOfListeners(priorityListeners, listener);
+        const weightListeners = originEventListeners[weight];
+        let index = this._findIndexOfListeners(weightListeners, listener);
         if (index === -1) {
           continue;
         } else {
-          priorityListeners.splice(index, 1);
+          weightListeners.splice(index, 1);
         }
       }
     }
@@ -127,15 +127,15 @@ class PriorityEventEmmitter {
     // 拿到该事件的所有事件监听器，这个监听器为一个对象，key为其权重
     const originEventListeners = this.listeners[eventName];
     // 遍历所有的当前listeners，并且保证必须遍历到为自己添加的具有权重listener，没有权重的listener并不遍历
-    let prioritys = Object.keys(originEventListeners)
-      .filter((priority) => Object.prototype.toString.call(priority) === '[object String]')
+    let weights = Object.keys(originEventListeners)
+      .filter((weight) => Object.prototype.toString.call(weight) === '[object String]')
       .sort((a, b) => this._stricterParseFloat(b) - this._stricterParseFloat(a));
 
     // 排序后的事件监听队列
     let listeners = [];
     // 开始组装事件监听队列
-    prioritys.forEach((priority) => {
-      listeners.push(...originEventListeners[priority]);
+    weights.forEach((weight) => {
+      listeners.push(...originEventListeners[weight]);
     });
     // 拿到了排序后的事件监听队列
     listeners.forEach((listener) => {
@@ -167,35 +167,59 @@ class PriorityEventEmmitter {
       throw new TypeError('listener is not valid, must be a funtion or valid object');
     }
     if (!this._isValidEventName(eventName)) {
-      throw new TypeError('eventName is not valid, must be valid static string or string which includes eventName and priority, such as `event` or `event.1` or `event.1.1`');
+      throw new TypeError('eventName is not valid, must be valid static string or string which includes eventName and weight, such as `event` or `event.1` or `event.1.1`');
     }
-    let priority, event;
+    let weight, event;
     const reg = /^([^\.]+\.(\-|\+)?(\d+\.)?\d+)$/;
     // 如果是具备有权重的eventName
     if (reg.test(eventName)) {
       event = /^[^\.]+/.exec(eventName)[0]
-      priority = eventName.split(/^[^\.]+\./)[1];
+      weight = eventName.split(/^[^\.]+\./)[1];
     } else {
       event = eventName;
       // 如果没有权重参数传入，则把传入的eventName作为事件名称，权重为负无穷
-      priority = -Infinity;
+      weight = -Infinity;
     }
 
     if (!this.listeners[event]) {
       this.listeners[event] = {
-        [priority]: [listener],
+        [weight]: [listener],
       };
     } else {
-      if (!this.listeners[event][priority]) {
-        this.listeners[event][priority] = [listener];
+      if (!this.listeners[event][weight]) {
+        this.listeners[event][weight] = [listener];
       } else {
-        this.listeners[event][priority].push(listener);
+        this.listeners[event][weight].push(listener);
       }
     }
     // 返回this以便链式调用
     return this;
   }
+  /**
+   * $offAll: 解除某一事件的所有监听器
+   * @param  {String}/{RegExp} eventName/eventNameRegExp   事件名称/事件名称的匹配正则式
+   * 事件名称举例：
+   * 1. 'event'：删除名为event的事件所有事件监听器
+   * 2. /^eve*$/：删除匹配对应正则表达式的所有事件监听器
+   * @return {Object}             返回this以便链式调用
+   */
+  $offAll (eventName) {
+    const { listeners, _isValidEventName } = this;
+    if (typeof eventName === 'string') { // 传入了一个字符串，仅解除这个事件名下的监听器
+      if (!_isValidEventName(eventName)) {
+        throw new TypeError('eventName is not valid, must be valid static string or string which includes eventName and weight, such as `event` or `event.1` or `event.1.1`');
+      }
+      delete listeners[eventName];
+    } else if (eventName instanceof RegExp) {
+      for (let event in listeners) {
+        if (listeners.hasOwnProperty(event) && eventName.test(event)) {
+          delete listeners[event];
+        }
+      }
+    }
+    return this;
+  }
 }
 
-module.exports = PriorityEventEmmitter;
+module.exports = WeightEventEmmitter;
 

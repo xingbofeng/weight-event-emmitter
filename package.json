@@ -1,23 +1,45 @@
 {
-  "name": "priorityeventemmitter",
+  "name": "weight-event-emmitter",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "带权重的事件发送器",
+  "keywords": [
+    "event",
+    "EventEmmitter",
+    "weight"
+  ],
+  "main": "./weightEventEmmitter.min.js",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha tests/test.js"
+    "test": "mocha tests/test.js",
+    "build": "babel weightEventEmmitter.js --no-comments -o weightEventEmmitter.min.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/xingbofeng/PriorityEventEmmitter.git"
+    "url": "https://github.com/xingbofeng/weight-event-emmitter"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "counterxing",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/xingbofeng/PriorityEventEmmitter/issues"
+    "url": "https://github.com/xingbofeng/weight-event-emmitter/issues"
   },
-  "homepage": "https://github.com/xingbofeng/PriorityEventEmmitter#readme",
+  "homepage": "https://github.com/xingbofeng/weight-event-emmitter#readme",
   "devDependencies": {
     "assert": "^1.4.1",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-minify": "^0.5.0-alpha.a24dd066",
     "mocha": "^5.1.1"
-  }
+  },
+  "engines": {
+    "node": ">= 6.0.0",
+    "npm": ">= 3.0.0"
+  },
+  "browserslist": [
+    "last 3 Chrome versions",
+    "last 3 Firefox versions",
+    "Safari >= 10",
+    "Explorer >= 11",
+    "Edge >= 12",
+    "iOS >= 10",
+    "Android >= 6"
+  ]
 }

@@ -1,13 +1,13 @@
-# PriorityEventEmmitter
-`PriorityEventEmmitter`是客户端与服务端均可复用的事件监听器。支持带权事件注册与触发。
+# weight-event-emmitter
+`weight-event-emmitter`是客户端与服务端均可复用的事件监听器。支持带权事件注册与触发。
 
 ## 使用
 
 ```bash
-npm install priorityeventemmitter
+npm install weight-event-emmitter
 ```
 
-安装了`priorityeventemmitter`后，你可以在任何一处业务代码里使用`priorityeventemmitter`。
+安装了`weight-event-emmitter`后，你可以在任何一处业务代码里使用`weight-event-emmitter`。
 
 ## 测试
 
@@ -18,29 +18,29 @@ npm run test
 ## 示例
 
 ```javascript
-const EventHub = require('priorityeventemmitter');
+const WeightEventEmmitter = require('weight-event-emmitter');
 
-const eventHub = new EventHub();
+const eventHub = new WeightEventEmmitter();
 
 const eventListener = () => console.log('event')
 
-eventHub.$on('event', eventListener);
-eventHub.$on('event.-1', () => console.log('event.-1'));
-eventHub.$on('event.2', () => console.log('event.2'));
-eventHub.$on('event.1', () => console.log('event.1'));
+weightEventEmmitter.$on('event', eventListener);
+weightEventEmmitter.$on('event.-1', () => console.log('event.-1'));
+weightEventEmmitter.$on('event.2', () => console.log('event.2'));
+weightEventEmmitter.$on('event.1', () => console.log('event.1'));
 
-eventHub.$emit('event');
+weightEventEmmitter.$emit('event');
 // print event.2
 // print event.1
 // print event.-1
 // print event
-eventHub.$off('event', eventListener);
+weightEventEmmitter.$off('event', eventListener);
 
-eventHub.$emit('event');
+weightEventEmmitter.$emit('event');
 // no longer print event
 
-eventHub.$once('event.1', () => console.log('once'));
-eventHub.$emit('event');
+weightEventEmmitter.$once('event.1', () => console.log('once'));
+weightEventEmmitter.$emit('event');
 // print event.2
 // print event.1
 // print once
@@ -48,12 +48,12 @@ eventHub.$emit('event');
 ```
 
 ## API
-首先需要在需要使用`PriorityEventEmmitter`的任意一处，创建`PriorityEventEmmitter`实例：
+首先需要在需要使用`weight-event-emmitter`的任意一处，创建`weight-event-emmitter`实例：
 
 ```javascript
-const EventHub = require('priorityeventemmitter');
+const WeightEventEmmitter = require('weight-event-emmitter');
 
-const eventHub = new EventHub();
+const weightEventEmmitter = new WeightEventEmmitter();
 ```
 
 ### $on
@@ -69,7 +69,7 @@ const eventHub = new EventHub();
 * `listener`：事件监听回调函数。
 
 #### 返回值
-* 返回`PriorityEventEmmitter`实例，以便于链式调用。
+* 返回`weight-event-emmitter`实例，以便于链式调用。
 
 ### $emit
 `$emit`方法触发一个事件。
@@ -79,7 +79,7 @@ const eventHub = new EventHub();
 * 第`1~n`个参数：传递给事件监听器回调函数的参数。
 
 #### 返回值
-* 返回`PriorityEventEmmitter`实例，以便于链式调用。
+* 返回`weight-event-emmitter`实例，以便于链式调用。
 
 ### $off
 `$off`方法取消一个事件监听器。
@@ -87,8 +87,13 @@ const eventHub = new EventHub();
 * `eventName`：触发的事件名称，如`event`，不需要带权重。
 * `listener`：事件监听回调函数。
 
+### $offAll
+`$off`方法取消指定的所有事件监听器。
+#### 参数
+* `eventName/eventNameRegExp`：触发的事件名称或者正则表达式，如`event`或者`/^eve*$/`，不需要带权重。
+
 #### 返回值
-* 返回`PriorityEventEmmitter`实例，以便于链式调用。
+* 返回`weight-event-emmitter`实例，以便于链式调用。
 
 ### $once
 `$once`方法参数类似于`$on`方法，在事件触发一次后取消。
